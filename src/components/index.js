@@ -1,5 +1,8 @@
-import { View, Text, TextInput, TouchableOpacity, Pressable } from 'react-native'
-import React from 'react'
+import { View, Text, TextInput, TouchableOpacity, Pressable, StyleSheet } from 'react-native'
+import React, { useState } from 'react'
+import Icon from 'react-native-vector-icons/FontAwesome'
+import { Colors } from '../config'
+import CheckBox from '@react-native-community/checkbox'
 
 export const Input = (props) => {
     return (
@@ -16,6 +19,64 @@ export const Input = (props) => {
                 />
             </View>
         </View>
+
+    )
+}
+export const Checkbox = (props) => {
+    const { toggleCheckBox, setToggleCheckBox, title1, title } = props
+
+    return (
+        <View>
+            {props.label && <Text className="mb-2 uppercase text-primary">{props.label}</Text>}
+            <View className="bg-secondary rounded-[14px] w-full h-14 justify-center pl-5 pr-5 mb-5">
+                <View className="flex flex-row  items-center gap-x-10">
+                    <View className="flex flex-row  items-center">
+                        <CheckBox
+                            disabled={false}
+                            value={toggleCheckBox}
+                            onValueChange={(newValue) => setToggleCheckBox(newValue)}
+                        /><Text>{title}</Text>
+                    </View>
+                    {title1 && <View className="flex flex-row  items-center">
+                        <CheckBox
+                            disabled={false}
+                            value={toggleCheckBox}
+                            onValueChange={(newValue) => setToggleCheckBox(newValue)}
+                        /><Text>{title1}</Text>
+                    </View>}
+                </View>
+
+            </View>
+        </View>
+
+    )
+}
+export const Radiobox = (props) => {
+    const { toggleCheckBox, setToggleCheckBox, title1, data, onchange } = props
+    const [userOption, setUserOption] = useState(null);
+
+    return (
+        <View>
+            {props.label && <Text className="mb-2 uppercase text-primary">{props.label}</Text>}
+            <View className="bg-secondary rounded-[14px] w-full h-14 justify-center pl-5 pr-5 mb-5">
+                <View className="flex flex-row">
+                    {data.map((item) =>
+                    (
+                        /*Change the 'onPress' handler here */
+                        <Pressable onPress={() => { setUserOption(item.value); onchange(item.value) }} className="flex flex-row gap-x-1 items-center">
+                            <View className="h-5 w-5 flex justify-center items-center border border-whitewash ">
+                                {item.value === userOption && <Icon name="check" size={18} />}
+                            </View>
+                            <View className="pr-2">
+                                <Text> {item.value}</Text>
+                            </View>
+                        </Pressable>
+                    )
+                    )}
+
+                </View>
+            </View>
+        </View >
 
     )
 }
@@ -99,6 +160,19 @@ export const ListItem = (props) => {
 
     )
 }
+
+export const DashCardItem = (props) => {
+    return (
+        <View className="  w-1/2   p-2">
+            <View style={{ elevation: 2 }} className=" h-28  bg-whitewash   rounded-[10px] flex justify-center items-center">
+                {props.icon}
+                <Text className="font-bold text-primary text-xl">{props.value}</Text>
+                <Text className="font-semibold text-secondary text-xl">{props.title}</Text>
+            </View>
+        </View>
+
+    )
+}
 export const ListItem_ = (props) => {
     return (
         <View className="h-14 w-full flex flex-row text-secondary"
@@ -121,3 +195,21 @@ export const ListItem_ = (props) => {
 
     )
 }
+
+const styles = StyleSheet.create({
+    option: {
+        fontSize: 20,
+        color: 'white',
+        textAlign: 'center',
+    },
+    unselected: {
+        backgroundColor: 'red',
+        margin: 5,
+    },
+    selected: {
+        backgroundColor: 'blue',
+        margin: 6,
+        padding: 10,
+        borderRadius: 10,
+    },
+});

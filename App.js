@@ -8,12 +8,9 @@ import 'react-native-gesture-handler';
 
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import Auth from './src/screens/auth';
-import Dashboard from './src/screens/dashboard';
-import Splash from './src/screens/splash';
 import AuthStackNavigator from './src/navigations/auth.stacknavigations';
 
-import { store } from './store'
+import store from './redux/store'
 import { Provider } from 'react-redux'
 
 

@@ -1,9 +1,36 @@
 import { View, Text, Image } from 'react-native'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import Logo from './../../img/logo.png'
-import { Button, P_Button, S_Button } from '../components'
+import { S_Button } from '../components'
+import { getData } from '../services/asyncStorage.service'
 
 const Splash = ({ navigation }) => {
+    const [logged, setLogged] = useState({
+        name: '',
+        state: false
+    })
+    const getStarted = async () => {
+        let user = await getData("userInfo")
+        let userInfo = JSON.parse(user)
+        if (user) {
+            navigation.navigate('Dashboard', { name: userInfo.name })
+        } else {
+            navigation.navigate('Login', { name: 'sign up' })
+        }
+    }
+
+
+    useEffect(() => {
+        const getUser = async () => {
+            let user = await getData("userInfo")
+            let userInfo = JSON.parse(user)
+            if (user) {
+                setLogged({ name: userInfo.name, state: true })
+            }
+        }
+        getUser()
+
+    }, [])
     return (
         <View className="flex h-screen w-screen bg-whitewash  ">
             <View className="flex h-full">
@@ -12,15 +39,15 @@ const Splash = ({ navigation }) => {
                     <Image source={Logo} />
                     <Text className="font-bold  text-primary text-center">Solution you can Trust</Text>
                 </View>
-                <View className="flex h-1/3 p-10 bg-primary rounded-tr-[50px] rounded-bl-[50px]">
-                    <Text className="text-3xl font-black">Welcome</Text>
-                    <Text className=" text-xl font-thin pb-10">Twind is a financial managemet app that helps
-                        chama manage and keep track on all the activies
-                        and transaction within the group
+                <View className="flex h-1/3 p-10 bg-primary rounded-t-[20px] ">
+                    <Text className="text-3xl font-black">{logged.state ? `Hi ${logged.name}` : "Wlocome"}</Text>
+                    <Text className=" text-xl font-thin pb-10">
+                        {!logged.state ? "Twind is a financial managemet app that helps chama manage and keep track on all the activies and transaction within the group"
+                            : " How are you liking Twind so far kindly refer to other people and earn twind points"}
                     </Text>
                     <S_Button
-                        title="Get Started"
-                        onclick={() => navigation.navigate('Login', { name: 'sign up' })}
+                        title={!logged.state ? "Get Started" : "Continue "}
+                        onclick={() => getStarted()}
                     />
                 </View>
             </View>

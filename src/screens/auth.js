@@ -1,11 +1,12 @@
 
-import React, { useState } from 'react'
-import { Alert, Text, TextInput, TouchableOpacity, useColorScheme, View, } from 'react-native';
+import React, { useEffect, useState } from 'react'
+import { Alert, Text, TouchableOpacity, View, } from 'react-native';
 import { Input, Button } from '../components';
-import { useDispatch, useSelector } from 'react-redux'
-import { registerUser } from './../features/auth/auth.action'
-import { unwrapResult } from '@reduxjs/toolkit';
-const Auth = ({ navigation, route }) => {
+import { connect } from 'react-redux'
+import { loginUser } from './../../redux/actions/auth.actions'
+import { showToastWithGravity } from './helpers';
+import { getData } from '../services/asyncStorage.service';
+const Auth = ({ navigation, route, loginUser, error }) => {
     const createThreeButtonAlert = (err) =>
         Alert.alert('Error in submission form', err, [
             {
@@ -16,33 +17,51 @@ const Auth = ({ navigation, route }) => {
             { text: 'OK', onPress: () => console.log('OK Pressed') },
         ]);
     const [item, setItem] = React.useState({
-        phone_number: "",
-        password: "",
+        phone_number: "0716017316",
+        password: "Kee5145j$",
         name: "",
         confirm_password: ""
     });
     const [reg, setReg] = useState(false)
-    const dispatch = useDispatch()
+
     const submit = async () => {
-
         try {
-            if (!reg) {
-                navigation.navigate('Dashboard', { name: item.name })
-            } else {
-                let resultAction = await dispatch(registerUser(item))
-                const originalPromiseResult = unwrapResult(resultAction)
-            }
+            await props.loginUser(item)
+            showToastWithGravity("User Reistration Complete wait for activations")
+            setReg(false)
         } catch (error) {
-            createThreeButtonAlert(error)
-
-            console.log("error", error)
+            showToastWithGravity(error)
         }
-        //  : navigation.navigate('Login', { name: 'login' })
+    }
+    const login = async () => {
+        try {
+
+            await loginUser(item)
+            showToastWithGravity("Login Successful")
+            navigation.navigate('Dashboard', { name: item.name })
+        } catch (error) {
+            console.log(error)
+            showToastWithGravity(error)
+        }
 
     }
-    const login = () => {
-        navigation.navigate('Dashboard', { name: item.name })
+    const geyUser = async () => {
+        let user = await getData("userInfo")
+        console.log(user)
+        return user
     }
+    useEffect(() => {
+        const getUser = async () => {
+            let user = await getData("userInfo")
+            let userInfo = JSON.parse(user)
+            if (user) {
+                navigation.navigate('Dashboard', { name: userInfo.name })
+            }
+        }
+        getUser()
+
+    }, [])
+
     return (
         <View className="flex-1  h-screen bg-primary ">
             <View className="flex-1  h-full ">
@@ -51,9 +70,10 @@ const Auth = ({ navigation, route }) => {
                     <Text className="text-3xl text-500 uppercase">Twind </Text>
                     <Text className="text-500 uppercase ">Twind {route.params.name}</Text>
                 </View>
+                {/* <Loader /> */}
                 <View
                     // className=" h-2/3 bg-quaternary rounded-tr-[200px] rounded-bl-[200px] pt-24 pr-10 pl-10"
-                    className="h-2/3 bg-quaternary rounded-tr-[100px] rounded-bl-[100px] flex justify-center  p-10"
+                    className="h-2/3 bg-quaternary  rounded-t-[20px] flex justify-center  p-10"
                 >
 
                     {reg && <Input placeholder="Name"
@@ -114,5 +134,16 @@ const Auth = ({ navigation, route }) => {
         </View>
     )
 }
+const mapStateToProps = (state) => {
+    return {
 
-export default Auth
+        loading: state.userDetails.loading,
+
+        error: state.userDetails.error,
+
+    };
+};
+
+export default connect(mapStateToProps, { loginUser })(Auth)
+
+// export default 
